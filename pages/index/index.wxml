@@ -1,6 +1,5 @@
 <!--index.wxml-->
 <view class="index_container">
-<view>{{test}}</view>
   <view class='head'>
     <view class='address'>
       <text class='icon iconfont icon-dingwei'></text>

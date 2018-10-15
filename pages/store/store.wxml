@@ -48,16 +48,17 @@
   </view>
   <view class='food'>
     <view class='food-class' style='height:{{listHeight}}px'>
-      <scroll-view scroll-y style='height:{{listHeight}}px'>
+      <scroll-view scroll-y scroll-with-animation scroll-into-view="{{viewToLeft}}" style='height:{{listHeight}}px'>
         <view class="food-class-item {{activeIndex==index?'active':''}}" wx:for="{{food}}" wx:key="item.title" bindtap='selectFood'
-          data-index="{{index}}" data-titleId="{{item.titleId}}">
+          data-index="{{index}}" data-titleId="{{item.titleId}}" id="{{item.titleId+'left'}}">
           <view class='text' data-index="{{index}}" data-titleId="{{item.titleId}}">{{item.title}}</view>
           <view class="dot" wx:if="{{item.foodCount>0}}">{{item.foodCount}}</view>
         </view>
       </scroll-view>
     </view>
     <view class='food-detail'>
-      <scroll-view scroll-y scroll-with-animation style='height:{{listHeight}}px' scroll-into-view="{{viewTo}}" bindscroll="scroll">
+      <scroll-view scroll-y scroll-with-animation style='height:{{listHeight}}px' scroll-into-view="{{viewTo}}"
+        bindscroll="scroll">
         <view wx:for="{{food}}" wx:key="item.title" class="title-group" wx:for-index="groupindex">
           <view class='title' id='{{item.titleId}}'>{{item.title}}</view>
           <view wx:for="{{item.items}}" wx:key="item.goodId" class='food-info' wx:for-index="index">
@@ -76,8 +77,8 @@
                 <view class='count'>
                   <view class='add btn' bindtap="add" data-item="{{item}}" data-groupindex="{{groupindex}}" data-index="{{index}}">+</view>
                   <view class='num'>{{item.count}}</view>
-                  <view class='ruduce btn' bindtap="reduce" data-item="{{item}}" wx:if="{{item.count>0?true:false}}" data-groupindex="{{groupindex}}"
-                    data-index="{{index}}">-</view>
+                  <view class='ruduce btn' bindtap="reduce" data-item="{{item}}" wx:if="{{item.count>0?true:false}}"
+                    data-groupindex="{{groupindex}}" data-index="{{index}}">-</view>
                 </view>
               </view>
             </view>
@@ -97,13 +98,17 @@
       </view>
       <view class="start-del {{(totalMoney>=storeInfo.minDelPrice&&cart.length>0)?'has-food':''}}">{{(totalMoney>=storeInfo.minDelPrice&&cart.length>0)?'去结算':storeInfo.minDelPrice+'元起送'}}</view>
     </view>
-    <view class="cart-list">
+    <view class="cart-list" wx:if="{{showCart}}">
       <view class="cart-list-header">清空购物车</view>
       <view class="cart-list-item">
         <view wx:for="{{cart}}" class="item">
-          <view>{{item.name}}</view>
-          <view>{{item.price}}</view>
-          <view>-+</view>
+          <view class="cart-detail">{{item.name}}</view>
+          <view class="cart-detail" style="color:red">￥{{item.price}}</view>
+          <view class="cart-detail cart-count">
+            <view class='add btn' bindtap="cartAdd"  data-id="{{item.id}}">-</view>{{item.count}}
+            <view
+              class='add btn' bindtap="cartReduce" data-id="{{iten.id}}">+</view>
+          </view>
         </view>
       </view>
     </view>

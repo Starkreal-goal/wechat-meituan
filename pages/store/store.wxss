@@ -200,6 +200,10 @@ page {
   text-overflow: ellipsis;
 }
 
+.food-detail .title-group {
+  padding-bottom: 30rpx;
+}
+
 .food-detail .title-group:last-child {
   margin-bottom: 120rpx;
 }
@@ -213,6 +217,10 @@ page {
 .food-info {
   margin-bottom: 30rpx;
   display: flex;
+}
+
+.food-info:last-child {
+  margin-bottom: 0;
 }
 
 .food-info .img {
@@ -264,7 +272,7 @@ page {
   font-size: 30rpx;
 }
 
-.price-count .count .btn {
+.btn {
   width: 50rpx;
   height: 50rpx;
   border-radius: 50%;
@@ -343,13 +351,15 @@ page {
   color: #333;
   background-color: #ffd161;
 }
-.cart .cart-list{
+
+.cart .cart-list {
   position: absolute;
   bottom: 110rpx;
   background-color: #fff;
   width: 100%;
 }
-.cart .cart-list-header{
+
+.cart .cart-list-header {
   height: 60rpx;
   line-height: 60rpx;
   background-color: #eee;
@@ -358,9 +368,28 @@ page {
   padding: 0 30rpx;
   color: #333;
 }
+
+.cart-list-item {
+  max-height: 300rpx;
+  overflow: scroll;
+}
+
 .cart-list-item .item {
   display: flex;
 }
+
+.cart-list-item .item .cart-detail {
+  flex: 1;
+  height: 100rpx;
+  line-height: 100rpx;
+  text-align: center;
+}
+
+.cart-count {
+  display: flex;
+  align-items: center;
+}
+
 .modal {
   position: fixed;
   top: 0;

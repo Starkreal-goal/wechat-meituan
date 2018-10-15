@@ -7,10 +7,12 @@ Page({
    */
   data: {
     viewTo: "",
+    viewToLeft: "",
     listHeight: 300,
     activeIndex: 0,
     tabIndex: 0,
     showModal: false,
+    showCart: false,
     heigthArr: [],
     cart: [],
     totalMoney: 0,
@@ -586,7 +588,7 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function(options) {
+  onLoad: function (options) {
     wx.setNavigationBarTitle({
       title: this.data.storeInfo.storeName
     });
@@ -595,7 +597,7 @@ Page({
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
-  onReady: function() {
+  onReady: function () {
     let height1, height2;
     let res = wx.getSystemInfoSync();
     let winHeight = res.windowHeight;
@@ -618,32 +620,32 @@ Page({
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow: function() {},
+  onShow: function () {},
 
   /**
    * 生命周期函数--监听页面隐藏
    */
-  onHide: function() {},
+  onHide: function () {},
 
   /**
    * 生命周期函数--监听页面卸载
    */
-  onUnload: function() {},
+  onUnload: function () {},
 
   /**
    * 页面相关事件处理函数--监听用户下拉动作
    */
-  onPullDownRefresh: function() {},
+  onPullDownRefresh: function () {},
 
   /**
    * 页面上拉触底事件的处理函数
    */
-  onReachBottom: function() {},
+  onReachBottom: function () {},
 
   /**
    * 用户点击右上角分享
    */
-  onShareAppMessage: function() {},
+  onShareAppMessage: function () {},
   selectFood(e) {
     this.setData({
       activeIndex: e.target.dataset.index,
@@ -658,6 +660,7 @@ Page({
     query.selectAll(".title-group").boundingClientRect();
     query.exec(res => {
       for (let i = 0; i < res[0].length; i++) {
+        console.log(res[0][i])
         height += parseInt(res[0][i].height);
         heigthArr.push(height);
       }
@@ -670,35 +673,46 @@ Page({
   scroll(e) {
     clearTimeout(timer);
     timer = setTimeout(() => {
-      console.log('scroll');
       let srollTop = e.detail.scrollTop;
       for (let i = 0; i < this.data.heigthArr.length; i++) {
         if (
           srollTop >= this.data.heigthArr[i] &&
-          srollTop < this.data.heigthArr[i + 1]
+          srollTop < this.data.heigthArr[i + 1] &&
+          this.data.activeIndex != i
         ) {
           this.setData({
             activeIndex: i
           });
+          if (i < 3) {
+            this.setData({
+              viewToLeft: 'title1left'
+            })
+          } else {
+            this.setData({
+              viewToLeft: 'title' + (i - 2) + 'left'
+            })
+          }
           return;
         }
       }
-    }, 200)
+    }, 100)
   },
   add(e) {
+    let groupindex = e.target.dataset.groupindex;
+    let index = e.target.dataset.index;
     let countMsg =
       "food[" +
-      e.target.dataset.groupindex +
+      groupindex +
       "].items[" +
-      e.target.dataset.index +
+      index +
       "].count";
-    let count = this.data.food[e.target.dataset.groupindex].items[
-      e.target.dataset.index
+    let count = this.data.food[groupindex].items[
+      index
     ].count;
-    let foodCountMsg = "food[" + e.target.dataset.groupindex + "].foodCount";
-    let foodCount = this.data.food[e.target.dataset.groupindex].foodCount;
-    let foodId = this.data.food[e.target.dataset.groupindex].items[
-      e.target.dataset.index
+    let foodCountMsg = "food[" + groupindex + "].foodCount";
+    let foodCount = this.data.food[groupindex].foodCount;
+    let foodId = this.data.food[groupindex].items[
+      index
     ].foodId;
     count += 1;
     foodCount += 1;
@@ -717,15 +731,13 @@ Page({
     if (hasCart) {
       cart[i].count++;
     } else {
-      cart.push(
-        this.data.food[e.target.dataset.groupindex].items[
-          e.target.dataset.index
-        ]
-      );
+      cart.push({ ...this.data.food[groupindex].items[index],
+        groupindex
+      });
     }
     let totalMoney = this.data.totalMoney;
-    totalMoney += this.data.food[e.target.dataset.groupindex].items[
-      e.target.dataset.index
+    totalMoney += this.data.food[groupindex].items[
+      index
     ].price;
     this.setData({
       cart: cart,
@@ -733,19 +745,21 @@ Page({
     });
   },
   reduce(e) {
+    let groupindex = e.target.dataset.groupindex;
+    let index = e.target.dataset.index;
     let countMsg =
       "food[" +
-      e.target.dataset.groupindex +
+      groupindex +
       "].items[" +
-      e.target.dataset.index +
+      index +
       "].count";
-    let count = this.data.food[e.target.dataset.groupindex].items[
-      e.target.dataset.index
+    let count = this.data.food[groupindex].items[
+      index
     ].count;
-    let foodCountMsg = "food[" + e.target.dataset.groupindex + "].foodCount";
-    let foodCount = this.data.food[e.target.dataset.groupindex].foodCount;
-    let foodId = this.data.food[e.target.dataset.groupindex].items[
-      e.target.dataset.index
+    let foodCountMsg = "food[" + groupindex + "].foodCount";
+    let foodCount = this.data.food[groupindex].foodCount;
+    let foodId = this.data.food[groupindex].items[
+      index
     ].foodId;
     count -= 1;
     foodCount -= 1;
@@ -765,8 +779,8 @@ Page({
       }
     }
     let totalMoney = this.data.totalMoney;
-    totalMoney -= this.data.food[e.target.dataset.groupindex].items[
-      e.target.dataset.index
+    totalMoney -= this.data.food[groupindex].items[
+      index
     ].price;
     this.setData({
       cart: cart,
@@ -775,7 +789,9 @@ Page({
   },
   listCart() {
     if (this.data.cart.length > 0) {
-      console.log(this.data.cart);
+      this.setData({
+        showCart: !this.data.showCart
+      })
     }
   },
   selectTabItem(e) {
